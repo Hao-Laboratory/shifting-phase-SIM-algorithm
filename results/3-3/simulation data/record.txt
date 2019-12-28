@@ -1,0 +1,7 @@
+sample: star like
+
+excitation wavelength：640 nm
+emission wavelength：670 nm
+
+pixel size：15 nm
+
