@@ -5,7 +5,7 @@ addpath('functions');
 nOrientation = 3; % numbers of pattern's orientation 
 nPhase = 3; % numbers of pattern's pnase 
 
-filePath = ['.\images\', num2str(nOrientation), '-', num2str(nPhase), '\']; % raw image file path
+filePath = ['.\results\', num2str(nOrientation), '-', num2str(nPhase), '\','\simulation data\']; % raw image file path
 fileName = '1_X';
 fileType = 'tif';
 
