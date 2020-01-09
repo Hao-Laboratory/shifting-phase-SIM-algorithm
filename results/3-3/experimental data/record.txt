@@ -1,7 +1,8 @@
 sample: fluorescent beads with diameter 100 nm
 
+NA= 1.49
 excitation wavelength：488 nm
-emission wavelength：515 nm
+emission peak wavelength：515 nm
 
 EMCCD  pixel size：13000/150nm=86.7nm
 

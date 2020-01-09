@@ -1,5 +1,6 @@
 sample: star like
 
+NA =1.49；
 excitation wavelength：640 nm
 emission wavelength：670 nm
 
