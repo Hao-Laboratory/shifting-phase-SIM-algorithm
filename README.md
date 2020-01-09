@@ -1,2 +1,2 @@
 # shiftPhaseSIM
-Codes based on Matlab for shift phase SIM algorithm
+Codes based on Matlab for SP-SIM algorithm
