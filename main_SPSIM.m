@@ -1,17 +1,22 @@
-% program for SIM reconstruction using shift phase algorithm
+% Program for SIM reconstruction using "shifting-phase algorithm“ (SP-SIM)
+% The algorithm was proposed in the article https://doi.org/10.1364/OL.387888
+
 clear; clc; close all;
 addpath('functions');
 %% read image file
 nOrientation = 3; % numbers of pattern's orientation 
 nPhase = 3; % numbers of pattern's pnase 
 
-filePath = ['.\results\', num2str(nOrientation), '-', num2str(nPhase), '\','\simulation data\']; % raw image file path
+filePath = ['.\results\', num2str(nOrientation), '-', num2str(nPhase), '\','\experimental data\']; % raw image file path
 fileName = '1_X';
 fileType = 'tif';
 
 %% parameter of the detection system
-lambda = 670; % fluorescence emission wavelength (emission maximum). unit: nm
-pixelSize = 15; % psize=pixel size/magnification power. unit: nm
+lambda = 515; % fluorescence emission wavelength (emission maximum). unit: nm
+pixelSize = 86.7; % pixel size of raw image. unit: nm
+
+na = 1.49;
+wienerFactor = 0.05;
 
 %% saving file
 saveFlag = 0;  % save the results if saveFlag equals 1;
@@ -24,17 +29,27 @@ for iOrientation = 1:nOrientation
     end
 end
 
-%% Pre-processing to correct experimental minor fluctuations of the light source or camera exposure time (optional). 
-PSF_edge = fspecial('gaussian',5,40);
-noiseImage = edgetaper(noiseImage,PSF_edge);
-    
+%% Pre-processing to correct experimental minor fluctuations of the light source or camera exposure time (optional).     
 for iOrientation = 1:nOrientation
     % normalization by means of each image of a sequence
-    % noiseImage(:,:,:,iOrientation) = removeSeqStripe(noiseImage(:,:,:,iOrientation));
+     noiseImage(:,:,:,iOrientation) = removeSeqStripe(noiseImage(:,:,:,iOrientation));
 end 
 
-noiseImage = imresize(noiseImage, 2, 'bicubic'); % interpolation to satisfy Nyquist�CShannon sampling theorem
+PSF_edge = fspecial('gaussian',5,40);
+noiseImage = edgetaper(noiseImage,PSF_edge);
+
+noiseImage = imresize(noiseImage, 2, 'bicubic'); % interpolation to satisfy Nyquist–Shannon sampling theorem
 [nPixelX, nPixelY] = size(noiseImage(:,:,1,1));
+
+%% wiener filtering to get smaller psf (for beads in the manuscript, the process is commented)
+[ipsfde, OTFde] = generatePSF(nPixelX,nPixelY,pixelSize/2, na, lambda);
+
+for iOrientation = 1:nOrientation
+    for iPhase = 1:nPhase
+      noiseImage(:,:,iPhase,iOrientation)=wienerFilter(OTFde,squeeze(noiseImage(:,:,iPhase,iOrientation)),wienerFactor.^2);        
+      noiseImage(:,:,iPhase,iOrientation)=noiseImage(:,:,iPhase,iOrientation).*(noiseImage(:,:,iPhase,iOrientation)>0);
+    end
+end
 
 %% shift phase-SIM
 % pre-defined matrix to store the results
@@ -48,12 +63,10 @@ for iOrientation = 1:nOrientation
         minusSquareImage(:,:,iPhase,iOrientation) = (noiseImage(:,:,iPhase,iOrientation) - ...
             wideFieldImageOri(:,:,1,iOrientation)).^2;
     end
-    
     shiftPhaseImageOri(:,:,iOrientation) = sqrt(mean(minusSquareImage(:,:,:,iOrientation), 3));
 end
   
 shiftPhaseImage = mean(shiftPhaseImageOri, 3);
-
 
 % draw figures
 figure;
@@ -67,7 +80,6 @@ imagesc(1:nPixelX, 1:nPixelY, shiftPhaseImage);
 axis square; colormap('gray');
 colorbar; xlabel('Position X (pixel)'); ylabel('Positon Y (pixel)');
 title('SP-SIM image');
-
 
 if saveFlag
     imwrite(uint8(norm01(wideFieldImage)*255), gray(256), [filePath,'WF','.', fileType],fileType,'Resolution',300);
