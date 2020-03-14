@@ -1,5 +1,8 @@
 # shiftPhaseSIM
-Codes based on Matlab for shift phase SIM algorithm
+Codes based on Matlab for "shifting-phase SIM (SP-SIM)"  algorithm
+
+The algorithm was proposed in the article "Fast reconstruction algorithm for structured
+illumination microscopy" (https://doi.org/10.1364/OL.387888)
 
 The folder 'functions' includes the necessary subroutine;
 
