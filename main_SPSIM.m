@@ -41,7 +41,7 @@ noiseImage = edgetaper(noiseImage,PSF_edge);
 noiseImage = imresize(noiseImage, 2, 'bicubic'); % interpolation to satisfy Nyquist–Shannon sampling theorem
 [nPixelX, nPixelY] = size(noiseImage(:,:,1,1));
 
-%% wiener filtering to get smaller psf (for beads in the manuscript, the process is commented)
+%% wiener filtering to get smaller psf (optional, for star-like sample and beads in the manuscript, the process is commented)
 [ipsfde, OTFde] = generatePSF(nPixelX,nPixelY,pixelSize/2, na, lambda);
 
 for iOrientation = 1:nOrientation
