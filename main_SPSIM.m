@@ -16,7 +16,7 @@ lambda = 515; % fluorescence emission wavelength (emission maximum). unit: nm
 pixelSize = 86.7; % pixel size of raw image. unit: nm
 
 na = 1.49;
-wienerFactor = 0.05;
+wienerFactor = 0.05; % parameter which depends on the noise level of the image
 
 %% saving file
 saveFlag = 0;  % save the results if saveFlag equals 1;
@@ -41,17 +41,17 @@ noiseImage = edgetaper(noiseImage,PSF_edge);
 noiseImage = imresize(noiseImage, 2, 'bicubic'); % interpolation to satisfy Nyquist–Shannon sampling theorem
 [nPixelX, nPixelY] = size(noiseImage(:,:,1,1));
 
-%% wiener filtering to get smaller psf (optional, for star-like sample and beads in the manuscript, the process is commented)
+%% Pre-processing：Wiener filtering to get smaller psf (optional, for star-like sample and beads in the manuscript, the process is commented)
 [ipsfde, OTFde] = generatePSF(nPixelX,nPixelY,pixelSize/2, na, lambda);
 
 for iOrientation = 1:nOrientation
     for iPhase = 1:nPhase
-      noiseImage(:,:,iPhase,iOrientation)=wienerFilter(OTFde,squeeze(noiseImage(:,:,iPhase,iOrientation)),wienerFactor.^2);        
-      noiseImage(:,:,iPhase,iOrientation)=noiseImage(:,:,iPhase,iOrientation).*(noiseImage(:,:,iPhase,iOrientation)>0);
+      %noiseImage(:,:,iPhase,iOrientation)=wienerFilter(OTFde,squeeze(noiseImage(:,:,iPhase,iOrientation)),wienerFactor.^2);        
+      %noiseImage(:,:,iPhase,iOrientation)=noiseImage(:,:,iPhase,iOrientation).*(noiseImage(:,:,iPhase,iOrientation)>0);
     end
 end
 
-%% shift phase-SIM
+%% shifting-phase SIM
 % pre-defined matrix to store the results
 minusSquareImage = zeros(nPixelX, nPixelY, nPhase, nOrientation);
 shiftPhaseImageOri = zeros(nPixelX, nPixelY, nOrientation); % shift phase image per orientation
