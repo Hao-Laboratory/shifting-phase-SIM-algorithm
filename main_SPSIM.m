@@ -29,7 +29,7 @@ for iOrientation = 1:nOrientation
     end
 end
 
-%% Pre-processing to correct experimental minor fluctuations of the light source or camera exposure time (optional).     
+%% Pre-processing to correct experimental minor fluctuations of the light source or camera exposure time (optional，for star-like sample in simulation, this process is commented).     
 for iOrientation = 1:nOrientation
     % normalization by means of each image of a sequence
      noiseImage(:,:,:,iOrientation) = removeSeqStripe(noiseImage(:,:,:,iOrientation));
